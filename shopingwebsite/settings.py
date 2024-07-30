@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    'website'
 ]
 
 MIDDLEWARE = [
@@ -73,9 +74,13 @@ WSGI_APPLICATION = "shopingwebsite.wsgi.application"
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'shop_site',
+        'USER': 'sree',
+        'PASSWORD': 'sree123',
+        'HOST': 'localhost',
+        'PORT': '3306',
     }
 }
 
