@@ -2,10 +2,38 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import User,auth
 from django.contrib import messages
 
+from website.models import Products
+
 
 def index(request):
-    return render(request, 'index.html')
+    product_queryset = Products.objects.all()
+    mens_products = Products.objects.filter(catogery='mens').all().values()
+    print(product_queryset.values())
+    return render(request, 'index.html', {
+        'products': product_queryset,
+        'mens': mens_products
+    })
 
+
+def mensShirts(request):
+    mens_products = Products.objects.filter(catogery='mens').all()
+    return render(request, 'mens_shirts.html', {
+        'products': mens_products
+    })
+
+def ProductDetails(request):
+    mens_products = Products.objects.filter(catogery='mens').all()
+    return render(request, 'product-details.html', {
+        'products': mens_products
+    })
+
+
+
+def mensTrousers(request):
+    mens_products = Products.objects.filter(catogery='mens').all()
+    return render(request, 'mens_shirts.html', {
+        'products': mens_products
+    })
 
 def cart(request):
     return render(request, 'cart.html')
