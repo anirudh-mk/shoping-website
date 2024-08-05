@@ -12,4 +12,8 @@ urlpatterns = [
     path('mens/shirts', views.mensShirts, name='mens-shirts'),
     path('mens/trousers', views.mensTrousers, name='mens-trousers'),
     path('product-details', views.ProductDetails, name='product-details'),
+    path('cart/add', views.addProductToCart, name='add-product'),
+    path('product/remove', views.removeProduct, name='remove-product'),
+    path('cart/increase', views.IcreaseQuantity, name='increase-quantity'),
+    path('cart/decrease', views.DecreaseQuantity, name='decrease-quantity')
 ]
