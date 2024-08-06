@@ -15,5 +15,9 @@ urlpatterns = [
     path('cart/add', views.addProductToCart, name='add-product'),
     path('product/remove', views.removeProduct, name='remove-product'),
     path('cart/increase', views.IcreaseQuantity, name='increase-quantity'),
-    path('cart/decrease', views.DecreaseQuantity, name='decrease-quantity')
+    path('cart/decrease', views.DecreaseQuantity, name='decrease-quantity'),
+    path('checkout/product/remove', views.removeProductFromCheckout, name='remove-product'),
+    path('checkout/quantity/increase', views.IcreaseQuantityFromCheckout, name='increase-quantity'),
+    path('checkout/quantity/decrease', views.DecreaseQuantityFromCheckout, name='decrease-quantity')
+
 ]

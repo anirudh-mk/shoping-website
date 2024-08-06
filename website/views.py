@@ -1,3 +1,4 @@
+from django.db.models import Sum
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User, auth
 from django.contrib import messages
@@ -37,13 +38,44 @@ def mensTrousers(request):
 
 def cart(request):
     user = request.user
-    user_cart_queryset = UserCart.objects.filter(user=user).all().values('product__name', 'product__id',
-                                                                         'product__price', 'product__image', 'quantity', 'total')
-    return render(request, 'cart.html', {'products': user_cart_queryset})
+    user_cart_queryset = UserCart.objects.filter(user=user).all()
+    subtotal = user_cart_queryset.aggregate(total=Sum('total'))['total'] or 0
+    shipping_cost = 150
+    echo_tax = 0
+    if subtotal > 800:
+        echo_tax = 4
+        shipping_cost = 0
+
+    total = shipping_cost + echo_tax + subtotal
+
+    return render(request, 'cart.html', {
+        'user_cart_queryset': user_cart_queryset,
+        'subtotal': subtotal,
+        'echo_tax': echo_tax,
+        'shipping_cost': shipping_cost,
+        'total': total
+    })
 
 
 def checkout(request):
-    return render(request, 'checkout.html')
+    user = request.user
+    user_cart_queryset = UserCart.objects.filter(user=user).all()
+    subtotal = user_cart_queryset.aggregate(total=Sum('total'))['total'] or 0
+    shipping_cost = 150
+    echo_tax = 0
+    if subtotal > 800:
+        echo_tax = 4
+        shipping_cost = 0
+
+    total = shipping_cost + echo_tax + subtotal
+
+    return render(request, 'checkout.html', {
+        'user_cart_queryset': user_cart_queryset,
+        'subtotal': subtotal,
+        'echo_tax': echo_tax,
+        'shipping_cost': shipping_cost,
+        'total': total
+    })
 
 
 def contact(request):
@@ -98,7 +130,8 @@ def addProductToCart(request):
 
     user_cart = UserCart(
         product=product_instance,
-        user=user
+        user=user,
+        total=product_instance.price
     )
     user_cart.save()
 
@@ -140,3 +173,40 @@ def DecreaseQuantity(request):
     )
 
     return redirect('cart')
+
+
+def removeProductFromCheckout(request):
+    product_id = request.GET.get('id')
+    UserCart.objects.filter(product_id=product_id).delete()
+    return redirect('checkout')
+
+
+def IcreaseQuantityFromCheckout(request):
+    product_id = request.GET.get('id')
+    user_cart = UserCart.objects.filter(product_id=product_id).first()
+    product = Products.objects.filter(id=product_id).first()
+    product_quantity = user_cart.quantity + 1
+    product_price = product.price * product_quantity
+
+    UserCart.objects.filter(product_id=product_id).update(
+        quantity=product_quantity,
+        total = product_price
+    )
+
+    return redirect('checkout')
+
+def DecreaseQuantityFromCheckout(request):
+    product_id = request.GET.get('id')
+    user_cart = UserCart.objects.filter(product_id=product_id).first()
+    product = Products.objects.filter(id=product_id).first()
+    product_quantity = user_cart.quantity - 1
+    if product_quantity == 0:
+        UserCart.objects.filter(product_id=product_id).delete()
+    product_price = product.price * product_quantity
+
+    UserCart.objects.filter(product_id=product_id).update(
+        quantity=product_quantity,
+        total = product_price
+    )
+
+    return redirect('checkout')

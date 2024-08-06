@@ -166,30 +166,30 @@
 						</tr>
 					</thead>
 					<tbody>
-					{% for product in products %}
+					{% for user_cart in user_cart_queryset %}
 						<tr>
 							<td class="cart_product">
-								<a href=""><img src="{{product.product__image.url}}" alt=""></a>
+								<a href=""><img src="{{user_cart.product.image.url}}" width="200px" alt=""></a>
 							</td>
 							<td class="cart_description">
-								<h4><a href="">{{product.product__name}}</a></h4>
-								<p>Web ID: {{product.product__id}}</p>
+								<h4><a href="">{{user_cart.product.name}}</a></h4>
+								<p>Web ID: {{user_cart.product.id}}</p>
 							</td>
 							<td class="cart_price">
-								<p>$ {{product.product__price}}</p>
+								<p>$ {{user_cart.product.price}}</p>
 							</td>
 							<td class="cart_quantity">
 								<div class="cart_quantity_button">
-									<a class="cart_quantity_up" href="cart/increase?id={{product.product__id}}"> + </a>
-									<input class="cart_quantity_input" type="text" name="quantity" value="{{product.quantity}}" autocomplete="off" size="2">
-									<a class="cart_quantity_down" href="cart/decrease?id={{product.product__id}}"> - </a>
+									<a class="cart_quantity_up" href="cart/increase?id={{user_cart.product.id}}"> + </a>
+									<input class="cart_quantity_input" type="text" name="quantity" value="{{user_cart.quantity}}" autocomplete="off" size="2">
+									<a class="cart_quantity_down" href="cart/decrease?id={{user_cart.product.id}}"> - </a>
 								</div>
 							</td>
 							<td class="cart_total">
-								<p class="cart_total_price">$ {{product.total}}</p>
+								<p class="cart_total_price">$ {{user_cart.total}}</p>
 							</td>
 							<td class="cart_delete">
-								<a class="cart_quantity_delete" href="product/remove?id={{product.product__id}}"><i class="fa fa-times"></i></a>
+								<a class="cart_quantity_delete" href="product/remove?id={{user_cart.product.id}}"><i class="fa fa-times"></i></a>
 							</td>
 						</tr>
 						{%endfor%}
@@ -263,10 +263,18 @@
 				<div class="col-sm-6">
 					<div class="total_area">
 						<ul>
-							<li>Cart Sub Total <span>$59</span></li>
-							<li>Eco Tax <span>$2</span></li>
+							<li>Cart Sub Total <span>${{subtotal}}</span></li>
+							{% if subtotal <= 800%}
+							<li>Eco Tax <span>Free</span></li>
+							{% else %}
+							<li>Eco Tax <span>$ {{echo_tax}}</span></li>
+							{%endif%}
+							{% if subtotal >= 800%}
 							<li>Shipping Cost <span>Free</span></li>
-							<li>Total <span>$61</span></li>
+							{% else %}
+							<li>Shipping Cost <span>$ {{shipping_cost}}</span></li>
+							{%endif%}
+							<li>Total <span>${{total}}</span></li>
 						</ul>
 							<a class="btn btn-default update" href="">Update</a>
 							<a class="btn btn-default check_out" href="">Check Out</a>
