@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import User, auth
 from django.contrib import messages
 
-from website.models import Products, UserCart
+from website.models import Products, UserCart, Order
 
 
 def index(request):
@@ -58,24 +58,45 @@ def cart(request):
 
 
 def checkout(request):
-    user = request.user
-    user_cart_queryset = UserCart.objects.filter(user=user).all()
-    subtotal = user_cart_queryset.aggregate(total=Sum('total'))['total'] or 0
-    shipping_cost = 150
-    echo_tax = 0
-    if subtotal > 800:
-        echo_tax = 4
-        shipping_cost = 0
 
-    total = shipping_cost + echo_tax + subtotal
+    if request.method == 'POST':
+        user = request.user
 
-    return render(request, 'checkout.html', {
-        'user_cart_queryset': user_cart_queryset,
-        'subtotal': subtotal,
-        'echo_tax': echo_tax,
-        'shipping_cost': shipping_cost,
-        'total': total
-    })
+        first_name = request.POST['first_name']
+        last_name = request.POST['last_name']
+        email = request.POST['email']
+        address = request.POST['address']
+
+        order = Order(
+            first_name=first_name,
+            last_name=last_name,
+            email=email,
+            address=address,
+            user=user
+        )
+        order.save()
+
+        return redirect('checkout')
+
+    else:
+        user = request.user
+        user_cart_queryset = UserCart.objects.filter(user=user).all()
+        subtotal = user_cart_queryset.aggregate(total=Sum('total'))['total'] or 0
+        shipping_cost = 150
+        echo_tax = 0
+        if subtotal > 800:
+            echo_tax = 4
+            shipping_cost = 0
+
+        total = shipping_cost + echo_tax + subtotal
+
+        return render(request, 'checkout.html', {
+            'user_cart_queryset': user_cart_queryset,
+            'subtotal': subtotal,
+            'echo_tax': echo_tax,
+            'shipping_cost': shipping_cost,
+            'total': total
+        })
 
 
 def contact(request):
@@ -101,7 +122,7 @@ def register(request):
             messages.info(request, 'all fields required')
             return redirect('register')
     else:
-        return render(request, 'login.html')
+        return render(request, 'register.html')
 
 
 def login(request):

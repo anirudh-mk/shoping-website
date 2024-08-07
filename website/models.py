@@ -29,6 +29,20 @@ class UserCart(models.Model):
     total = models.IntegerField(default=0)
 
 
+class Order(models.Model):
+    CHOICES = [
+        ('pending', 'pending'),
+        ('completed', 'completed'),
+        ('canceled', 'canceled'),
+    ]
+    email = models.CharField(max_length=200)
+    first_name = models.CharField(max_length=300)
+    last_name = models.CharField(max_length=300)
+    address = models.CharField(max_length=500)
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    status = models.CharField(max_length=200, choices=CHOICES)
+
+
 
 
 
